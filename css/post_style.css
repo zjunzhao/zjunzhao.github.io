@@ -32,50 +32,15 @@ body{
 	background-color: #F75D59;
 }
 
-.blog_title{
+.post_title{
 	height: 100px;
 	width: 100%;
 	text-align: center;
 	line-height: 100px;
 }
 
-.post_list{
+.post_content{
 	max-width: 800px;
 	margin: 0 auto;
-}
-
-.post_type{
-	font-size: 24px;
-	color: #43BFC7;
-	margin-top: 10px;
-	margin-bottom: 10px;
-}
-
-.post{
 	font-size: 18px;
-	margin: 5px;
-	background: #E0FFFF;
-}
-
-.post_title{
-	padding: 3px;
-	border-bottom: 1px solid #CCC;
-}
-
-.post_title a{
-	color: black;
-	text-decoration: none;
-}
-
-.post_title a:hover{
-	text-decoration: underline;
-}
-
-.post_time{
-	font-size: 10px;
-	padding-top: 5px;
-	padding-bottom: 5px;
-}
-
-.post_abstract{
 }
