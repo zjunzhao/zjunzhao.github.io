@@ -37,10 +37,16 @@ body{
 	width: 100%;
 	text-align: center;
 	line-height: 100px;
+	font-size: 30px;
 }
 
 .post_content{
 	max-width: 800px;
 	margin: 0 auto;
-	font-size: 18px;
+	font-size: 15px;
+}
+
+.post_content .section_title{
+	text-align: center;
+	font-size: 20px;
 }
