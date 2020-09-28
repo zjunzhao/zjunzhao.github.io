@@ -43,10 +43,21 @@ body{
 .post_content{
 	max-width: 800px;
 	margin: 0 auto;
-	font-size: 15px;
+	font-size: 16px;
 }
 
 .post_content .section_title{
 	text-align: center;
 	font-size: 20px;
+}
+
+.post_content .module{
+	border-top: 1px solid #000;
+	border-bottom: 1px solid #000;
+	border-left: 1px solid #000;
+	border-right: 1px solid #000;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	padding-left: 10px;
+	padding-right: 10px;
 }
