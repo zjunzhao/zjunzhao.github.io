@@ -40,6 +40,21 @@ body{
 	font-size: 30px;
 }
 
+.post_outline{
+	max-width: 800px;
+	margin: 0 auto;
+	font-size: 16px;
+}
+
+.post_outline a{
+	color: #43BFC7;
+	text-decoration: none;
+}
+
+.post_outline a:hover{
+	color: black;
+}
+
 .post_content{
 	max-width: 800px;
 	margin: 0 auto;

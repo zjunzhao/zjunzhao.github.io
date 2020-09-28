@@ -32,10 +32,24 @@
 	<div class='post_title'>
 		<b>频繁项集挖掘（Frequent Itemsets Mining）</b>
 	</div>
+	<div class='post_outline'>
+		本文大纲：
+		<ul>
+		<li><a href='#section1'>介绍</a></li>
+		<li><a href='#section2'>频繁项集（Frequent Itemset）和关联规则（Association Rule）</a></li>
+		<li><a href='#section3'>Apriori算法（Apriori Algorithm）及其变种</a></li>
+		<li><a href='#section4'>实验</a></li>
+		<li><a href='#section5'>总结</a></li>
+		<li><a href='#section6'>参考文献</a></li>
+		</ul>
+	</div>
 	<div class='post_content'>
+		<div class='section_title' id='section1'>
+			<b>介绍</b>
+		</div>
 		<p>一家超市的决策者，经常需要考虑如下两个问题。第一个问题是，如何摆放商品，或者说，该将哪些商品摆放在一起，能让用户的购物体验更好。直观上想，如果用户经常同时购买某些商品，比如经常同时购买牛奶和面包，那么决策者就应该将牛奶和面包放在一起，这样能帮助同时购买牛奶和面包的用户节省一些找商品的时间。第二个问题是，假如某个商品降价了，那么其它商品的价格怎么调整，能让超市的收入更高。仍然以牛奶和面包为例，假设降价的商品是牛奶，直观上想，这时候给面包涨价应该是一个合适的决策。这是因为买了牛奶的用户一般也会买面包，当用户在超市里买了牛奶后，为了方便，也会在同一家超市买面包，因此将面包涨价就能增长超市的收入。</p>
 		<p>在上面的例子里，我们可以看到，在超市的经营决策中，寻找“哪些商品更可能同时被用户购买”和“用户购买了某些商品，就很可能会购买另一些商品”这类的规律是很有用的事情。而这类规律，通常是隐藏在营业数据中的。在数据挖掘（Data Mining）领域中，频繁项集挖掘（Frequent Itemsets Mining）就是研究如何从数据中发现这类规律的一个任务，本文将介绍这个任务最基本的定义和算法。</p>
-		<div class='section_title'>
+		<div class='section_title' id='section2'>
 			<b>频繁项集（Frequent Itemset）和关联规则（Association Rule）</b>
 		</div>
 		<p>因为频繁项集挖掘是从数据中发现某类规律的任务，因此我们需要规定这个任务使用的数据的类型和这个任务发现的规律的类型。首先我们先规定这个任务所使用的数据的类型。频繁模式挖掘这个任务一般假设我们有 $n$ 个项（Item，也可以翻译为商品）和 $m$ 个篮子（Basket），每个篮子里有若干个项。这 $m$ 个篮子组成的数据就称为满足购物篮模型（Market-Basket Model）要求的数据。下面总结一下购物篮模型的定义。</p>
@@ -71,7 +85,7 @@
 		</div>
 		<p>由提升度的定义可见，当一条关联规则的提升度较大时（远大于 $1$），就说明相比于不完全购买 $S_1$ 中的商品的用户，完全购买 $S_1$ 中的商品的用户更可能完全购买 $S_2$ 中的商品。当一条关联规则的提升度较小时（远小于 $1$），就说明相比于不完全购买 $S_1$ 中的商品的用户，完全购买 $S_1$ 中的商品的用户更不可能完全购买 $S_2$ 中的商品。当一条关联规则的提升度接近 $1$ 时，就说明用户是否完全购买 $S_2$ 中的商品，和用户是否完全购买 $S_1$ 中的商品，没有太大关系。</p>
 		<p>我们一般倾向于从数据中挖掘满足 $supp(S_1\cup S_2)$ 和 $conf(S_1\to S_2)$ 都比较大的关联规则（之所以要求 $supp(S_1\cup S_2)$ 较大，是因为如果 $S_1\cup S_2$ 不常见，那么这条关联规则可能不会带来太多商业利润），再用提升度等指标筛选出真正有效的关联规则。而关联规则的挖掘，可以归结为频繁项集的挖掘，这是因为只要找到所有的频繁项集，那对于任意一个频繁项集 $S$，枚举其子集 $S_1$，令 $S_2=S-S_1$，再验证置信度，就可以生成所有满足要求的关联规则。因此下一节主要讨论挖掘频繁项集的算法。</p>
-		<div class='section_title'>
+		<div class='section_title' id='section3'>
 			<b>Apriori算法（Apriori Algorithm）及其变种</b>
 		</div>
 		<p>本节主要介绍挖掘频繁项集的算法。先来回顾一下算法需要解决的任务，如下所示。</p>
@@ -158,15 +172,20 @@
 		</li>
 		</ul>
 		</div>
-		<div class='section_title'>
+		<div class='section_title' id='section4'>
 			<b>实验</b>
 		</div>
-		<p></p>
-		<div class='section_title'>
+		<p>我用python实现了Apriori算法（<a href='https://github.com/zjunzhao/zjz-package/blob/master/DataMining/apriori.py'>代码地址</a>），并用<a href='https://www.kaggle.com/irfanasrullah/groceries'>Groceries Market Basket Dataset</a>做实验。以 $90$ 为支持数阈值，可以求解得到 $3$ 个频繁 $3$-项集，分别为</p>
+		<ul>
+		<li>('tropical fruit', 'whole milk', 'rolls/buns')，支持数为 $108$</li>
+		<li>('tropical fruit', 'pip fruit', 'other vegetables')，支持数为 $93$</li>
+		<li>('other vegetables', 'rolls/buns', 'soda')，支持数为 $97$</li>
+		</ul>
+		<div class='section_title' id='section5'>
 			<b>总结</b>
 		</div>
-		<p></p>
-		<div class='section_title'>
+		<p>本文主要介绍了频繁项集挖掘的背景，基本概念和算法。</p>
+		<div class='section_title' id='section6'>
 			<b>参考文献</b>
 		</div>
 		<p>[1]CS246 of Stanford University, Week 2</p>
