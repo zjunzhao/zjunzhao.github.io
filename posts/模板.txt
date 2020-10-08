@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+	<meta charset='UTF-8'>
+	<!--my css-->
+	<link rel='stylesheet' type='text/css' href='../css/post_style.css'>
+	<!--latex eqution-->
+	<script type="text/x-mathjax-config">
+	MathJax.Hub.Config({
+		tex2jax: {inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+				  displayMath: [ ['$$','$$'], ["\\[","\\]"] ]}});
+	</script>
+	<script type="text/javascript" async 
+	src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+	</script>
+	<!--comment system-->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+	<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+	<!--title-->
+	<title>!!!title</title>
+</head>
+
+<body>
+	<div class='navbar'>
+		<ul>
+			<li><a href='../index.html'>主页</a></li>
+			<li></li>
+		</ul>
+	</div>
+	<div class='post_title'>
+		<b>!!!post title</b>
+	</div>
+	<div class='post_outline'>
+		本文大纲：
+		<ul>
+		<li><a href='#section1'>介绍</a></li>
+		</ul>
+	</div>
+	<div class='post_content'>
+		<div class='section_title' id='section1'>
+			<b>介绍</b>
+		</div>
+		
+		<div id="gitalk-container">
+		</div>
+		<script>
+			const gitalk = new Gitalk({
+			clientID: '60e008986c752027c7ff',
+			clientSecret: '9499d6813f02b98c7588fd01057260e26f6965a9',
+			repo: 'zjunzhao.github.io',
+			owner: 'zjunzhao',
+			admin: ['zjunzhao'],
+			id: location.pathname,
+			distractionFreeMode: false
+			})
+			gitalk.render('gitalk-container');
+		</script>
+		
+	</div>
+</body>
+
+</html>
