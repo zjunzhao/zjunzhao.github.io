@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+	<meta charset='UTF-8'>
+	<!--my css-->
+	<link rel='stylesheet' type='text/css' href='../css/post_style.css'>
+	<!--latex eqution-->
+	<script type="text/x-mathjax-config">
+	MathJax.Hub.Config({
+		tex2jax: {inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+				  displayMath: [ ['$$','$$'], ["\\[","\\]"] ]}});
+	</script>
+	<script type="text/javascript" async 
+	src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+	</script>
+	<!--comment system-->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+	<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+	<!--title-->
+	<title>clustering</title>
+</head>
+
+<body>
+	<div class='navbar'>
+		<ul>
+			<li><a href='../index.html'>主页</a></li>
+			<li></li>
+		</ul>
+	</div>
+	<div class='post_title'>
+		<b>聚类</b>
+	</div>
+	<div class='post_outline'>
+		本文大纲：
+		<ul>
+		<li><a href='#section1'>介绍</a></li>
+		<li><a href='#section2'>层次聚类（Hierarchical Clustering）</a></li>
+		<li><a href='#section3'>点分配（Point Assignment）</a></li>
+		<li><a href='#section4'>总结</a></li>
+		</ul>
+	</div>
+	<div class='post_content'>
+		<div class='section_title' id='section1'>
+			<b>介绍</b>
+		</div>
+		<p>聚类（Clustering）是数据挖掘领域的重要任务之一。给定一个点集（Point Set）和点对的距离计算方法，对点集内的点聚类就是将它们划分为若干个不交的子点集，使得每个点仅属于一个子点集，并且来自同一个子点集的点对之间的距离要尽量小，来自不同子点集的点对之间的距离要尽量大。下面是对聚类这个任务的总结。</p>
+		<div class='module'>
+		<b>任务</b>（聚类）：给定一个点集 $S$，点对的距离函数 $dist$，将 $S$ 内的点聚类为 $k$ 类就是
+		<ul>
+		<li>将 $S$ 划分为 $k$ 个不交集合的并，$S=S_1\cup S_2\cup\dots\cup S_k$，并且 $S_i\cap S_j=\emptyset,\ \forall i,j$。</li>
+		<li>$\forall x,x^\prime \in S_i$，$dist(x,x^\prime)$ 尽量小。</li>
+		<li>$\forall x\in S_i,x^\prime \in S_j,i\ne j$，$dist(x,x^\prime)$ 尽量大。</li>
+		</ul>
+		</div>
+		<p>本文将介绍两类常用的聚类算法，一类被称为层次聚类（Hierarchical Clustering）算法，另一类被称为点分配（Point Assignment）算法。</p>
+		<div class='section_title' id='section2'>
+			<b>层次聚类（Hierarchical Clustering）</b>
+		</div>
+		<p>本节介绍一类被称为层次聚类（Hierarchical Clustering）的聚类算法。这类算法的想法是：先将每个点都看成一个类，得到 $|S|$ 个类，之后根据某种规则，每步选 $2$ 个类进行合并，直至达到停止条件为止。这类算法的框架总结如下。</p>
+		<div class='module'>
+		<b>算法</b>（层次聚类）：
+		<ul>
+		<li>给定点集 $S$，类对的距离计算方法（经常是基于点对的距离函数来定义的），聚类过程的停止条件。</li>
+		<li>初始化：将每个点看成一个类，得到 $S$ 个类。</li>
+		<li>若停止条件不满足，则选取 $2$ 个距离最小的类进行合并。重复此步骤直至满足停止条件。</li>
+		<li>返回若干个子集，代表聚类结果。</li>
+		</ul>
+		</div>
+		<p>以上就是层次聚类算法的框架，可以看到，一个层次聚类算法的实例需要预先决定两个要素：类对的距离计算方法和聚类过程的停止条件，下面介绍这两个要素的常见例子。</p>
+		<p>首先介绍类对的距离计算方法的常见例子。</p>
+		<ul>
+		<li>将两个类的中心点的距离当成两个类的距离，其中类的中心点是类内所有点的均值，即
+		$$dist_{cluster}(S_i,S_j)=dist(x_{S_i},x_{S_j}),\ x_{S_i}=\frac{\sum_{x\in S_i}x}{|S_i|},\ ,\ x_{S_j}=\frac{\sum_{x\in S_j}x}{|S_j|}$$</li>
+		<li>将来自两个类的点对的距离的平均值当成两个类的距离，即
+		$$dist_{cluster}(S_i,S_j)=\frac{\sum_{x\in S_i,x^\prime\in S_j}dist(x,x^\prime)}{|S_i||S_j|}$$</li>
+		<li>将来自两个类的点对的距离的最小值当成两个类的距离，即
+		$$dist_{cluster}(S_i,S_j)=min_{x\in S_i,x^\prime\in S_j}dist(x,x^\prime)$$</li>
+		<li>将两个类的并集内的点对的距离的最大值当成两个类的距离（这个值也称为两个类的并集的直径，可以类似定义半径，密度等），即
+		$$dist_{cluster}(S_i,S_j)=max_{x,x^\prime\in S_i\cup S_j}dist(x,x^\prime)$$</li>
+		</ul>
+		<p>以上就是类对的距离计算方法的常见例子。不同的类对距离定义方法会导致不同的聚类结果，甚至对算法的时间复杂度也有影响，比如使用上述第三个距离定义方式（点对距离的最小值），那么层次聚类算法的合并部分就和最小生成树任务的kruskal算法类似，即时间复杂度能很容易地做到 $O(n^2lg(n))$，而使用其它距离定义，就不太容易达到这么小的时间复杂度。</p>
+		<p>下面再给出聚类过程的停止条件的常见例子。</p>
+		<ul>
+		<li>当只剩下 $k$ 个类时停止，其中 $k$ 为预先给定的整数。</li>
+		<li>当当前要合并的类对的距离超过预先给定的类对距离阈值时停止。</li>
+		<li>定义另外一种类对距离，并给定这种类对距离的阈值，当当前要合并的类对的这种距离超过阈值时停止（即一种距离用来选要合并的类对，另一种距离用来判断是否结束算法过程）。</li>
+		</ul>
+		<p>以上就是聚类过程的停止条件的常见例子。当给定一组类对的距离计算方法和聚类过程的停止条件之后，就可以得到层次聚类算法的一个实例。</p>
+		<div class='section_title' id='section3'>
+			<b>点分配（Point Assignment）</b>
+		</div>
+		<p>本节介绍另一类聚类算法——点分配（Point Assignment）算法。点分配算法的想法是：将全体点按某种顺序进行分配，按照某种规则，将每个点分配到最适合它的一个类。点分配算法和层次聚类算法的一个重要的不同之处是类的表示方法不同。层次聚类算法用一个集合表示一个类，这个集合就是属于这个类的全体点，而点分配算法用另外一些量来表示类，比如用类的中心点来表示一个类，或者用类的一些统计量来表示一个类，或者用类内的一些关键点来表示一个类。可以看到，相比于层次聚类算法，点分配算法表示一个类需要的存储空间更少，这是因为点分配算法预先定义好了“给定若干个类的表示和一个点，如何判断这个点属于哪个类”的规则，因此只需要计算出合适的类表示就行。但尽管点分配算法需要的存储空间少，由于规则是人工预先定义的，可能没有层次聚类算法灵活。</p>
+		<p>点分配算法最著名的一个实例是k-means算法（K-means Algorithm），k-means算法用类的中心点来表示一个类，在得到全体类的中心点后，每个点都分配到离它最近的中心点所在的类里（这里考虑的点是欧式空间中的点，距离是欧式距离），算法流程如下所示。</p>
+		<div class='module'>
+		<b>算法</b>（k-means算法）：
+		<ul>
+		<li>给定点集 $S\subseteq R^d$，整数 $k$（代表要聚类到 $k$ 个类），和聚类过程的停止条件。</li>
+		<li>初始化：从 $S$ 中随机选出 $k$ 个点作为 $k$ 个类的初始中心点 $c_1,c_2,\dots,c_k$（有各总各样的选择方法，如选出 $k$ 个距离尽可能大的点）。</li>
+		<li>若停止条件不满足，则
+		<ul>
+		<li>（1）将 $S$ 中每个点分配到离它最近的中心点所在的类（此处的距离指的是欧式距离），即
+		$$S_i=\{x\in S|i={argmin}_j{||x-c_j||}_2^2\},\ i=1,2,\dots,k$$
+		</li>
+		<li>（2）对每个类，把类内全体点的均值当作该类的新的中心点，即
+		$$c_i=\frac{\sum_{x\in S_i}x}{|S_i|},\ i=1,2,\dots,k$$
+		</li>
+		</ul>
+		重复（1）（2）直至满足停止条件。
+		</li>
+		<li>返回 $k$ 个类的中心点。认为每个点都属于与它距离最近的中心点所在的类。</li>
+		</ul>
+		</div>
+		<p>通过简单的计算可以验证，k-means算法中的步骤（1）（2）总是能减小 $obj=\sum_{i=1}^{k}\sum_{x\in S_i}{||x-c_i||}_2^2$ 的值，并且 $obj$ 有下界 $0$，因此k-means算法能收敛到 $obj$ 的局部极小点（变量是中心点和每个点分配的类的标号）。</p>
+		<p>由于k-means算法的每步迭代，都需要用上全体数据，因此当数据量较大时，可能内存空间会不够。类比梯度下降（Gradient Descend）算法和随机梯度下降（Stochastic Gradient Descend）算法，k-means算法也有随机版本——随机k-means算法（Stochastic K-means Algorithm），随机k-means算法对k-means算法的最主要的改动就是每步迭代只从数据中采样一部分来更新各个类的中心点，算法流程如下所示。</p>
+		<div class='module'>
+		<b>算法</b>（随机k-means算法）：
+		<ul>
+		<li>给定点集 $S\subseteq R^d$，整数 $k$（代表要聚类到 $k$ 个类），和聚类过程的停止条件。给定参数 $\rho$ 的值。</li>
+		<li>初始化：从 $S$ 中随机选出 $k$ 个点作为 $k$ 个类的初始中心点 $c_1,c_2,\dots,c_k$。</li>
+		<li>若停止条件不满足，则从 $S$ 中随机采样一个子集 $S_0$
+		<ul>
+		<li>（1）将 $S_0$ 中每个点分配到离它最近的中心点所在的类（此处的距离指的是欧式距离），即
+		$$S_i=\{x\in S_0|i={argmin}_j{||x-c_j||}_2^2\},\ i=1,2,\dots,k$$
+		</li>
+		<li>（2）对每个类，用类内全体点的均值更新该类的中心点，更新公式为
+		$$c_i\gets(1-\rho)\times c_i+\rho\times\frac{\sum_{x\in S_i}x}{|S_i|},\ i=1,2,\dots,k$$
+		</li>
+		</ul>
+		重复（1）（2）直至满足停止条件。
+		</li>
+		<li>返回 $k$ 个类的中心点。认为每个点都属于与它距离最近的中心点所在的类。</li>
+		</ul>
+		</div>
+		<p>除了随机k-means算法，还有一个类似的点分配算法能处理数据量较大的情况，这个算法叫BFR算法（BFR Algorithm），BFR算法用 $3$ 个统计量来表示一个类，包括</p>
+		<ul>
+		<li>类内点的数目 $N_i=|S_i|$</li>
+		<li>类内点的和 ${SUM}_i=\sum_{x\in S_i}x$</li>
+		<li>类内点的平方和 ${SUMSQ}_i=\sum_{x\in S_i}x^2$，其中 $x^2$ 指的是逐分量平方，如 $(1,2)^2=(1,4)$</li>
+		</ul>
+		<p>用这 $3$ 个统计量可以计算出类的中心点 $\mu_i=\frac{{SUM}_i}{N}$ 和类内点各分量的标准差 $\sigma_i=\frac{{SUMSQ}_i}{N}-{(\frac{{SUM}_i}{N})}^2$，此处的平方依然是逐分量平方。BFR算法将数据分成若干个块，一块一块遍历，在遍历数据的过程过程中会维护 $k$ 个类的表示，若干个小类的类表示和离群点集合，并在遍历完成后将小类和离群点合并到 $k$ 个类中。在得到全体类的统计量的最终值后，计算出中心点，每个点都分配到离它最近的中心点所在的类里。算法流程如下所示。</p>
+		<div class='module'>
+		<b>算法</b>（BFR算法）：
+		<ul>
+		<li>给定点集 $S\subseteq R^d$，整数 $k$（代表要聚类到 $k$ 个类），小类的合并规则。给定参数 $\epsilon$ 的值。</li>
+		<li>初始化：从 $S$ 中随机选出 $k$ 个点更新 $k$ 个类的统计量。</li>
+		<li>将数据分成若干个块，逐块加载到内存中进行处理
+		<ul>
+		<li>遍历该块数据中的每个点 $x$，若存在某个类 $i$，使得
+		$$\sum_{j=1}^{d}{(\frac{x_j-\mu_{i,j}}{\sigma_{i,j}})}^2\le\epsilon$$
+		其中 $d$ 为点的维数。则认为该点属于第 $i$ 个类，用该点更新第 $i$ 个类的统计量（注意一开始 $\sigma_i=0$，需要特殊处理）。</li>
+		<li>将该块数据中未使用的点与上一步的离群点合并，使用任意一种聚类算法将其聚类为若干个小类，并用上述 $3$ 个统计量表示这些小类。</li>
+		<li>将这块数据得到的小类和上一块数据得到的小类按小类的合并规则进行合并（此处的合并指的是统计量的合并），只有一个点的小类归为离群点。</li>
+		</ul>
+		</li>
+		<li>遍历完数据后，根据小类中心和类中心的距离，用各个小类的统计量更新距离最近的类的统计量，根据离群点和类中心的距离，用各个离群点更新距离最近的类的统计量。</li>
+		<li>返回 $k$ 个类的统计量，计算 $k$ 个类的中心点。认为每个点都属于与它距离最近的中心点所在的类。</li>
+		</ul>
+		</div>
+		<p>上面介绍的几个点分配算法，在得到各个类的表示后，都是根据点到类中心的距离来决定点属于哪个类的，这种基于类中心的分类规则会导致聚类的结果倾向于得到若干个团状集合，像下图所示的情况就无法把蓝色点集和橘色点集区分开，因为蓝色点集和橘色点集的中心点是一样的。</p>
+		<div class='image'>
+			<img src='../figs/2020_10_13_cure.png' style='width: 400px; display: inline-block;'/>
+		</div>
+		<p>在本节的最后，介绍一个能处理上图情况的点分配算法——CURE算法（CURE Algorithm）。CURE算法用类内的一些关键点来表示一个类，在得到类的关键点后，每个点都分配到离它最近的关键点所在的类里。算法流程如下所示。</p>
+		<div class='module'>
+		<b>算法</b>（CURE算法）：
+		<ul>
+		<li>给定点集 $S\subseteq R^d$，整数 $k$（代表要聚类到 $k$ 个类）。</li>
+		<li>从 $S$ 中采样一个子集 $S_0$，使用任意一种聚类算法将 $S_0$ 聚类为若干个小类（经常使用层次聚类算法，这个步骤得到的小类的类别数一般比 $k$ 大）。</li>
+		<li>对每个小类，选出若干个距离较远的点，将这些点往小类的中心点的方向移动一段距离（如20%），得到的点就是这个小类的关键点。</li>
+		<li>将小类的关键点集合看作小类的集合，用层次聚类算法将这些小类合并为 $k$ 个类（合并指的是合并关键点集合）。</li>
+		<li>返回 $k$ 个类的关键点集合。认为每个点都属于与它距离最近的关键点所在的类。</li>
+		</ul>
+		</div>
+		<div class='section_title' id='section4'>
+			<b>总结</b>
+		</div>
+		<p>本文介绍了数据挖掘中的聚类任务和两类常见的聚类算法：层次聚类算法和点分配算法，并依次介绍了层次聚类算法的框架和点分配算法的几个例子。</p>
+		
+		<div id="gitalk-container">
+		</div>
+		<script>
+			const gitalk = new Gitalk({
+			clientID: '60e008986c752027c7ff',
+			clientSecret: '9499d6813f02b98c7588fd01057260e26f6965a9',
+			repo: 'zjunzhao.github.io',
+			owner: 'zjunzhao',
+			admin: ['zjunzhao'],
+			id: location.pathname,
+			distractionFreeMode: false
+			})
+			gitalk.render('gitalk-container');
+		</script>
+		
+	</div>
+</body>
+
+</html>
