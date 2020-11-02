@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+	<meta charset='UTF-8'>
+	<!--my css-->
+	<link rel='stylesheet' type='text/css' href='../css/post_style.css'>
+	<!--latex eqution-->
+	<script type="text/x-mathjax-config">
+	MathJax.Hub.Config({
+		tex2jax: {inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+				  displayMath: [ ['$$','$$'], ["\\[","\\]"] ]}});
+	</script>
+	<script type="text/javascript" async 
+	src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+	</script>
+	<!--comment system-->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+	<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+	<!--title-->
+	<title>svd</title>
+</head>
+
+<body>
+	<div class='navbar'>
+		<ul>
+			<li><a href='../index.html'>主页</a></li>
+			<li></li>
+		</ul>
+	</div>
+	<div class='post_title'>
+		<b>奇异值分解</b>
+	</div>
+	<div class='post_outline'>
+		本文大纲：
+		<ul>
+		<li><a href='#section1'>介绍</a></li>
+		<li><a href='#section2'>奇异值分解（Singular Value Decomposition）</a></li>
+		<li><a href='#section3'>低秩近似（Low-Rank Approximation）</a></li>
+		<li><a href='#section4'>主成分分析（Principal Component Analysis）</a></li>
+		<li><a href='#section5'>总结</a></li>
+		<li><a href='#section6'>参考文献</a></li>
+		</ul>
+	</div>
+	<div class='post_content'>
+		<div class='section_title' id='section1'>
+			<b>介绍</b>
+		</div>
+		
+		<p>奇异值分解（Singular Value Decomposition）是数据挖掘里最重要的线性代数技术之一，是许多传统数据挖掘算法的基础，如低秩近似（Low-Rank Approximation）和主成分分析（Principal Component Analysis）。本文将分别介绍奇异值分解、低秩近似和主成分分析。</p>
+		
+		<div class='section_title' id='section2'>
+			<b>奇异值分解（Singular Value Decomposition）</b>
+		</div>
+		
+		<p>对于 $m\times n$ 的矩阵 $X$，假设它的秩是 $r$（矩阵的秩=线性无关的行向量的最大数量=线性无关的列向量的最大数量），那么对它做奇异值分解就是将它分解为如下三个矩阵的乘积
+		$$X=U\Sigma V^T$$
+		其中 $U$ 和 $V$ 分别是 $m\times r$ 和 $n\times r$ 的矩阵，它们的列向量分别称为左奇异向量（Left Singular Vector）和右奇异向量（Right Singular Vector），并且左奇异向量和右奇异向量分别是标准正交的（Orthonormal）向量，$\Sigma$ 是 $r\times r$ 的对角矩阵，设其对角线元素为 $\sigma_1,\sigma_2,\cdots,\sigma_r$，那么就有 $\sigma_1\ge\sigma_2\ge\cdots\ge\sigma_r>0$，这些对角线元素也称为矩阵 $X$ 的奇异值（Singular Value）。
+		</p>
+		
+		<p>为了加深理解，下面从数据分解的角度来解释奇异值分解背后的含义。在数据挖掘领域，我们一般用向量来表示数据，假设数据集中有 $m$ 个数据，每个数据都用 $n$ 维的向量来表示（第 $i$ 个数据的向量表示记为 $x_i$），将这 $m$ 个向量按行堆叠成矩阵，就得到一个 $m\times n$ 的矩阵，将这个矩阵记为 $X$。在处理数据时，我们一般会对数据做一个零均值化的预处理，因此这里可以假设
+		$$x_1+x_2+\cdots+x_m=0$$
+		假设 $X$ 的秩是 $r$，那么就可以找到 $r$ 个线性无关的向量 $v_1,v_2,\cdots,v_r$，使得数据集中的全部特征向量都可以用这 $r$ 个向量的线性组合来表示，也就是可以将数据线性分解到 $r$ 个方向，用矩阵等式描述这件事就是
+		$$X=\left(\begin{matrix}x_1^T\\x_2^T\\\vdots\\x_m^T\end{matrix}\right)=\left(\begin{matrix}z_1^T\\z_2^T\\\vdots\\z_m^T\end{matrix}\right)\times\left(\begin{matrix}v_1^T\\v_2^T\\\vdots\\v_r^T\end{matrix}\right)$$
+		我们可以将 $v_1,v_2,\cdots,v_r$ 看成 $r$ 个新的坐标轴，那么 $z_i$ 就是第 $i$ 个数据的新坐标（需要注意这里的坐标轴和直角坐标系的坐标轴不太一样，区别在于这里的坐标轴不是两两正交的，并且各个坐标轴上的单位长度不一定是 $1$）。从这个角度，我们再来看 $X$ 的奇异值分解，先将 $X$ 的奇异值分解写成如下形式
+		$$\left(\begin{matrix}x_1^T\\x_2^T\\\vdots\\x_m^T\end{matrix}\right)=\left(\begin{matrix}u_{1,1} & u_{1,2} & \cdots & u_{1,r}\\u_{2,1} & u_{2,2} & \cdots & u_{2,r}\\\vdots\\u_{m,1} & u_{m,2} & \cdots & u_{m,r}\end{matrix}\right)\times\left(\begin{matrix}\sigma_1&0&\cdots&0\\0&\sigma_2&\cdots&0\\\vdots\\0&0&\cdots&\sigma_r\end{matrix}\right)\times\left(\begin{matrix}v_1^T\\v_2^T\\\vdots\\v_r^T\end{matrix}\right)$$
+		同样将 $v_1,v_2,\cdots,v_r$ 看成 $r$ 个新的坐标轴，由于这些向量是标准正交的，因此新的坐标系可以看成是由旧的坐标系绕原点旋转后得到的。此时第 $i$ 个数据的新坐标就是 ${(\sigma_1 u_{i,1},\sigma_2 u_{i,2},\cdots,\sigma_r u_{i,r})}^T$，通过简单的计算可以验证 $\sigma_j$ 恰好是这 $m$ 个数据在方向 $v_j$ 上的坐标分量的标准差，也就是说，$\sigma_j$ 刻画了这 $m$ 个数据在方向 $v_j$ 上的差异程度，$\sigma_j$ 越大，数据在方向 $v_j$ 上的差异程度越大，那么这个方向就越重要（因为这个方向更能区分不同的数据）。由于 $\sigma_1\ge\sigma_2\ge\cdots\ge\sigma_r$，因此这 $r$ 个坐标轴的重要程度是依次递减的。事实上，可以证明对这个数据集而言，标准差最大的方向就是 $v_1$，将数据在 $v_1$ 上的分量去掉后，标准差最大的方向就是 $v_2$，依此类推。也就是说，对数据矩阵进行奇异值分解，实际上就是找出 $r$ 个重要程度依次递减的方向，并将数据线性分解到这 $r$ 个方向。
+		</p>
+		
+		<p>通过上面的介绍，我们已经了解到矩阵的奇异值分解是一个很有趣的技术，那么对于所有的矩阵，这样的分解是否总是存在呢，事实确实如此，一般地，我们有如下定理</p>
+		
+		<div class='module'>
+		<b>定理</b>（矩阵的奇异值分解）：设矩阵 $X\in R^{m\times n}$，并且 $rank(X)=r$，那么矩阵 $X$ 存在如下分解
+		$$X=U\Sigma V^T$$
+		其中
+		<ul>
+		<li>$U=(u_1,u_2,\cdots,u_r)\in R^{m\times r}$，并且 $u_1,u_2,\cdots u_r$ 标准正交。</li>
+		<li>$\Sigma\in R^{r\times r}$ 是对角矩阵，并且对角元素 $\sigma_1,\sigma_2,\cdots,\sigma_r$ 满足 $\sigma_1\ge\sigma_2\ge\cdots\ge\sigma_r>0$。</li>
+		<li>$V=(v_1,v_2,\cdots,v_r)\in R^{n\times r}$，并且 $v_1,v_2,\cdots v_r$ 标准正交。</li>
+		<li>$\Sigma$ 是唯一的，$U$ 和 $V$ 可能有多种取法。</li>
+		</ul>
+		</div>
+		
+		<p>下面给出矩阵的奇异值分解的存在性的一个较为简单的证明（$X$ 的奇异值的唯一性可以由 $X^TX$ 的特征值的唯一性得出）。</p>
+		
+		<div class='module'>
+		<b>证明</b>：
+		<p>考虑矩阵 $X^TX$，因为这是实对称矩阵，所以有特征值分解
+		$$X^TX=V\Lambda V^T$$
+		其中 $V=(v_1,v_2,\cdots,v_n)$ 是正交矩阵，$\Sigma$ 是对角矩阵，对角矩阵的对角元素记为 $\lambda_1,\lambda_2,\cdots,\lambda_n$</p>
+		<p>因为 $X^TX$ 半正定，所以它的特征值都非负，不妨设 $\lambda_1\ge\lambda_2\ge\cdots\ge\lambda_n$。</p>
+		<p>设 $\sigma_i=\sqrt\lambda_i$，$u_i=\frac{Xv_i}{\sigma_i}$，$i=1,2,\cdots,r$（注意这里的下标到 $r$ 为止，因为剩下的特征值都是 $0$）。</p>
+		<p>那么 ${\|u_i\|}_2^2={\|\frac{Xv_i}{\sigma_i}\|}_2^2=\frac{v_i^TX^TXv_i}{\lambda_i}=1,\forall i$。</p>
+		<p>并且 $u_i^Tu_j=\frac{v_i^TX^TXv_j}{\sigma_i\sigma_j}=0,\forall i\ne j$。</p>
+		<p>即 $u_1,u_2,\cdots,u_r$ 标准正交。</p>
+		<p>由 $u_i$ 的构造方式我们可以得到如下等式
+		$$(u_1,u_2,\cdots,u_r)=X\cdot(v_1,v_2,\cdots,v_r)\cdot diag(\frac{1}{\sigma_1},\frac{1}{\sigma_2},\cdots,\frac{1}{\sigma_r})$$
+		所以
+		$$(u_1,u_2,\cdots,u_r)\cdot diag(\sigma_1,\sigma_2,\cdots,\sigma_r)=X\cdot(v_1,v_2,\cdots,v_r)$$
+		因为 ${\|Xv_i\|}_2^2=v_i^TX^TXv_i=0,\forall i>r$，所以 $Xv_i=0,\forall i>r$，所以
+		$$(u_1,u_2,\cdots,u_r,0,\cdots,0)\cdot diag(\sigma_1,\sigma_2,\cdots,\sigma_r,0,\cdots,0)=X\cdot(v_1,v_2,\cdots,v_r,v_{r+1},\cdots,v_n)$$
+		所以
+		$$\begin{equation}\begin{split}
+		X&=&(u_1,u_2,\cdots,u_r,0,\cdots,0)\cdot diag(\sigma_1,\sigma_2,\cdots,\sigma_r,0,\cdots,0)\cdot{(v_1,v_2,\cdots,v_n)}^T\\
+		&=&(u_1,u_2,\cdots,u_r)\cdot diag(\sigma_1,\sigma_2,\cdots,\sigma_r)\cdot{(v_1,v_2,\cdots,v_r)}^T
+		\end{split}\end{equation}$$
+		这就完成了奇异值分解的存在性的证明。
+		</p>
+		</div>
+		
+		<p>可以看到，上面的证明是一个构造性的证明，因此我们可以根据这个证明来设计矩阵的奇异值分解的数值算法，在本节的最后，我将介绍一个这样的数值算法。</p>
+		
+		<p>从上述证明可知，矩阵 $X^TX$ 的特征向量就是矩阵 $X$ 的右奇异向量，并且由于 $X^TX$ 的非零特征值等于 $X$ 的奇异值的平方，因此 $X^TX$ 的最大特征值的特征向量就是 $X$ 的最大奇异值的右奇异向量。因此求解 $X$ 的最大奇异值的右奇异向量的问题可以转化为求解 $X^TX$ 的最大特征值的特征向量的问题。幂迭代（Power Iteration）算法是一个求解实对称矩阵最大特征值的特征向量的数值算法，算法流程如下所示</p>
+		
+		<div class='module'>
+		<b>算法</b>（幂迭代算法）：
+		<ul>
+		<li>给定实对称矩阵 $A\in R^{n\times n}$ 和迭代算法的停止条件（如迭代 $1000$ 步）。</li>
+		<li>随机生成向量 $v\in R^n$。</li>
+		<li>若迭代算法的停止条件不满足，则令 $v\gets \frac{Av}{{\|Av\|}_2}$，否则返回 $v$，返回的 $v$ 即为矩阵 $A$ 的最大特征值的一个特征向量的近似值（并且范数为 $1$）。</li>
+		</ul>
+		</div>
+		
+		<p>利用幂迭代算法，我们可以计算出矩阵 $X^TX$ 的最大特征值的一个特征向量 $v$，这个 $v$ 同时也是矩阵 $X$ 的最大奇异值的一个右奇异向量。由奇异值分解存在性的证明可以看出，有了右奇异向量 $v$ 后，我们可以计算得到对应的奇异值 $\sigma$ 和左奇异向量 $u$，计算公式分别为
+		$$\sigma=\sqrt{{\|X^TXv\|}_2},\ u=\frac{Xv}{\sigma}$$
+		</p>
+		
+		<p>最后让我们将 $X$ 的奇异值分解写成 $r$ 项和的形式，可以得到
+		$$X=U\Sigma V^T=\sum_{i=1}^r \sigma_iu_iv_i^T$$
+		因此矩阵 $X-\sigma_1u_1v_1^T$ 的最大奇异值以及对应的左右奇异向量就是矩阵 $X$ 的第二大奇异值以及对应的左右奇异向量，根据这个事实，就可以给出一个奇异值分解的数值算法，算法流程如下所示。
+		</p>
+		
+		<div class='module'>
+		<b>算法</b>（基于幂迭代的奇异值分解算法）：
+		<ul>
+		<li>给定矩阵 $X$ 和算法的停止条件（如当前求得的奇异值小于 ${10}^{-3}$ 算法就停止）。</li>
+		<li>（1）利用幂迭代计算 $X^TX$ 的最大特征值的一个特征向量 $v$。</li>
+		<li>（2）根据公式 $\sigma=\sqrt{{\|X^TXv\|}_2}$ 和 $u=\frac{Xv}{\sigma}$ 计算 $\sigma$ 和 $u$。</li>
+		<li>（3）若停止条件不满足，则将 $\sigma$、$u$ 和 $v$ 分别加入奇异值序列、左奇异向量序列和右奇异向量序列，并令 $X\gets X-\sigma uv^T$，返回步骤（1）；若停止条件满足，则停止迭代。</li>
+		<li>将奇异值序列、左奇异向量序列和右奇异向量序列分别整理成矩阵 $\Sigma$、$U$ 和 $V$ 并返回。</li>
+		</ul>
+		</div>
+		
+		<p>需要注意一件事，虽然上面是基于对矩阵 $X^TX$ 做特征值分解来对矩阵 $X$ 做奇异值分解，但是我们也可以基于对矩阵 $XX^T$ 做特征值分解来对矩阵 $X$ 做奇异值分解，具体采用哪种方案取决于 $m$ 和 $n$ 的大小关系。比如当 $m&lt n$ 时，矩阵 $XX^T$ 的规模比 $X^TX$ 小，这时候对 $XX^T$ 做特征值分解计算量会相对小些。</p>
+		
+		<div class='section_title' id='section3'>
+			<b>低秩近似（Low-Rank Approximation）</b>
+		</div>
+		
+		<p>利用奇异值分解可以对矩阵做低秩近似。矩阵的低秩近似指的是这样一个任务：对给定的矩阵，寻找一个相同大小的低秩矩阵，使得低秩矩阵和原矩阵之间的误差尽量小，用数学语言表述这个任务如下。</p>
+		
+		<div class='module'>
+		<b>任务</b>（矩阵的低秩近似）：给定矩阵 $X\in R^{m\times n}$，整数 $k$ 和矩阵范数 $\|\cdot\|$，求解如下优化问题
+		$$\begin{equation}\begin{split}
+		&{min}_{Z\in R^{m\times n}}&\ \|Z-X\| \\
+		&\ \ \ \ \ s.t.&\ rank(Z)\le k
+		\end{split}\end{equation}$$
+		</div>
+		
+		<p>设矩阵 $X$ 的奇异值分解为
+		$$X=U\Sigma V^T=\sum_{i=1}^r \sigma_i u_i v_i^T$$
+		令
+		$$X_j=\sum_{i=1}^j \sigma_i u_i v_i^T$$
+		也就是通过将矩阵 $X$ 最小的 $r-j$ 个非零奇异值替换成 $0$ 来得到矩阵 $X_j$，此时矩阵 $X_j$ 的秩恰好就是 $j$。可以证明，当矩阵范数为Frobenius范数或2-范数时，$X_k$ 就是上述任务的解，具体证明见参考文献[4]。</p>
+		
+		<p>那么，矩阵的低秩近似有什么用呢？在计算机视觉中，图像经常可以用若干个矩阵来表示（黑白图像用 $1$ 个矩阵表示，彩色图像用 $3$ 个矩阵来表示），并且经验似乎表明，清晰的图像对应的矩阵一般都是低秩的，因此在过去人们经常使用矩阵的低秩近似来处理图像去噪等任务。</p>
+		
+		<div class='section_title' id='section4'>
+			<b>主成分分析（Principal Component Analysis）</b>
+		</div>
+		
+		<p>主成分分析（Principal Component Analysis）是一种常用的降维（Dimension Reduction）算法，为了自然地引入主成分分析，我需要先从降维开始介绍起。正如之前所讲，在数据挖掘领域经常用向量来表示数据，一般来讲，向量的维度越大，越不容易处理（向量的维度越大，模型的参数可能越多；模型的参数越多，就越容易过拟合），因此需要设计算法将向量的维度减小，也就是降维。一种简单的降维思路就是通过对向量做线性变换来降维，具体来讲，用 $n$ 维向量 $x$ 来表示数据，现在想把 $x$ 降到 $k$ 维，那么就找一个 $k\times n$ 的矩阵 $A$，将 $Ax$ 做为对 $x$ 降维的结果。那么这个 $A$ 应该如何选取呢？由于降维这个过程导致数据向量的维度减小，因此不可避免得会有信息损失，我们认为这个信息损失越少越好，为了刻画信息的损失量，我们再寻找一个 $n\times k$ 矩阵 $B$，对降维后的向量再做升维（升维过程也称为恢复或者重建），希望升维得到的结果和原先的 $x$ 尽量接近，也就是希望 $\|BAx-x\|$ 尽量小，其中 $\|\cdot\|$ 是预先定义的向量范数。用数学语言将这个降维任务总结如下。</p>
+		
+		<div class='module'>
+		<b>任务</b>（基于线性变换的降维）：给定数据矩阵 $X\in R^{m\times n}$（$m$ 个 $n$ 维向量）、整数 $k$（代表新维度）和矩阵范数 $\|\cdot\|$，求解如下优化问题
+		$$min_{A\in R^{n\times k},B\in R^{k\times n}}\ \|XAB-X\|$$
+		</div>
+		
+		<p>先从直觉上来看这个问题。在本文的第一节，我介绍了矩阵的奇异值分解的一种理解方式，设秩为 $r$ 的矩阵 $X$ 的奇异值分解为 $X=U\Sigma V^T$，那么 $V$ 的列向量可以看成 $r$ 个最重要的方向，并且重要程度依次递减。那么将数据 $x$ 投影到这 $r$ 个方向，得到的 $r$ 个分量也可以看成是 $x$ 的一种表示，并且 $r$ 个分量的重要程度也依次递减，那么容易想到将这 $r$ 个分量的前 $k$ 个做为降维的结果，取 $A=(v_1,v_2,\cdots,v_k)$ 恰好能做到这件事。</p>
+		
+		<p>事实上可以证明 $A=(v_1,v_2,\cdots,v_k)$，$B=A^T$ 正是这个优化问题的一个最优解，当矩阵范数 $\|\cdot\|$ 是Frobenius范数或2-范数时，可以利用上一节矩阵的低秩近似的结论给出一个简单的证明，如下所示。</p>
+		
+		<div class='module'>
+		<b>证明</b>：
+		<p>因为 $rank(XAB)\le rank(A)=k$，所以 $\|XAB-X\|\ge\|X_k-X\|$。</p>
+		<p>又 $A=(v_1,v_2,\cdots,v_k)$，$B=A^T$ 时，$XAB=X_k$，所以 $A=(v_1,v_2,\cdots,v_k)$，$B=A^T$ 是优化问题的一个最优解。</p>
+		</div>
+		
+		<p>根据上面的推导，我们就得到了一种基于线性变换的降维算法，这个算法正是主成分分析，算法流程如下所示。</p>
+		
+		<div class='module'>
+		<b>算法</b>（主成分分析）：
+		<ul>
+		<li>给定数据矩阵 $X\in R^{m\times n}$，整数 $k$。</li>
+		<li>对 $X$ 做奇异值分解得到 $X=U\Sigma V^T$，令 $A=(v_1,v_2,\cdots,v_k)$。</li>
+		<li>返回 $A$，对数据向量 $x$，降维结果为 $A^Tx$。</li>
+		</ul>
+		</div>
+		
+		<div class='section_title' id='section5'>
+			<b>总结</b>
+		</div>
+		
+		<p>本文主要介绍了奇异值分解的原理以及它在低秩近似和主成分分析中的应用。</p>
+		
+		<div class='section_title' id='section6'>
+			<b>参考文献</b>
+		</div>
+		
+		<p>[1]CS246 of Stanford University, Week 6</p>
+		<p>[2]Mining of Massive Datasets, Chapter 11</p>
+		<p>[3]MIT 18.065 6.Singular Value Decomposition</p>
+		<p>[4]<a href='https://courses.cs.washington.edu/courses/cse521/17wi/521-lecture-9.pdf'>CSE521 Lecture 9 Low Rank Approximation</a></p>
+		
+		<div id="gitalk-container">
+		</div>
+		<script>
+			const gitalk = new Gitalk({
+			clientID: '60e008986c752027c7ff',
+			clientSecret: '9499d6813f02b98c7588fd01057260e26f6965a9',
+			repo: 'zjunzhao.github.io',
+			owner: 'zjunzhao',
+			admin: ['zjunzhao'],
+			id: location.pathname,
+			distractionFreeMode: false
+			})
+			gitalk.render('gitalk-container');
+		</script>
+		
+	</div>
+</body>
+
+</html>
