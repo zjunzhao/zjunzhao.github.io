@@ -1,65 +1,47 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="zh-CN">
 
 <head>
-	<meta charset='UTF-8'>
-	<link rel='stylesheet' type='text/css' href='css/homepage_style.css'>
-	<title>zjunzhao's blog</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="zjunzhao 的学习笔记、课程整理与研究记录。">
+	<link rel="stylesheet" type="text/css" href="css/homepage_style.css">
+	<title>zjunzhao | Notes</title>
 </head>
 
 <body>
-	<div class='navbar'>
-		<ul>
-			<li><a href='index.html'>主页</a></li>
-			<li></li>
-		</ul>
-	</div>
-	<div class='blog_title'>
-		<b><span style='font-size:30px'>我的博客</span></b>
-	</div>
-	
-	<div class='post_list'>
-		<div class='post_type'>数据挖掘</div>
-		<div class='post'>
-			<div class='post_title'><a href='posts/2020_09_23_frequent_itemsets_mining.html'>频繁项集挖掘</a></div>
-			<div class='post_time'>2020-09-23</div>
-			<div class='post_abstract'>
-				摘要: 这篇文章介绍了频繁项集挖掘（frequent itemsets mining）的概念、算法和应用。
+	<header class="site-header">
+		<nav class="nav-shell" aria-label="Primary navigation">
+			<a class="brand" href="index.html">zjunzhao</a>
+			<div class="nav-links">
+				<a href="#posts">Posts</a>
+				<a href="https://github.com/zjunzhao">GitHub</a>
 			</div>
-			</br>
-			</br>
-			<div class='post_title'><a href='posts/2020_10_03_locality_sensitive_hashing.html'>局部敏感哈希——以寻找相似文本文档对为例</a></div>
-			<div class='post_time'>2020-10-03</div>
-			<div class='post_abstract'>
-				摘要：这篇文章介绍了如何使用局部敏感哈希（Locality-Sensitive Hashing）来加速相似文本文档对的寻找。
+		</nav>
+	</header>
+
+	<main class="page">
+		<section class="intro">
+			<h1>zjunzhao's blog</h1>
+			<p>
+				Algorithms, engineering, and reading notes.
+			</p>
+		</section>
+
+		<section class="archive" id="posts">
+			<div class="archive-header">
+				<h2>Posts</h2>
+				<label class="search">
+					<span>Search</span>
+					<input id="post-search" type="search" placeholder="title, topic, summary">
+				</label>
 			</div>
-			</br>
-			</br>
-			<div class='post_title'><a href='posts/2020_10_13_clustering.html'>聚类</a></div>
-			<div class='post_time'>2020-10-13</div>
-			<div class='post_abstract'>
-				摘要：这篇文章介绍了两类聚类算法：层次聚类（Hierarchical Clustering）算法和点分配（Point Assignment）算法。
-			</div>
-			</br>
-			</br>
-			<div class='post_title'><a href='posts/2020_10_27_svd.html'>奇异值分解</a></div>
-			<div class='post_time'>2020-10-27</div>
-			<div class='post_abstract'>
-				摘要：这篇文章介绍了奇异值分解（Singular Value Decomposition）和奇异值分解的两个应用：低秩近似（Low-Rank Approximation）和主成分分析（Principal Component Analysis）。
-			</div>
-			</br>
-		</div>
-	</div>
-	
-	<div class='post_list'>
-		<div class='post_type'>Paper Reading</div>
-	</div>
-	
-	<div class='post_list'>
-		<div class='post_type'>算法题题解</div>
-	</div>
-	
+			<div class="post-list" id="post-list" aria-live="polite"></div>
+		</section>
+	</main>
+
+	<script src="js/posts.js"></script>
+	<script src="js/homepage.js"></script>
 </body>
 
 </html>
